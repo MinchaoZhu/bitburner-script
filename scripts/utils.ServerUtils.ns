@@ -1,0 +1,51 @@
+/** @param {NS} ns **/
+let allServers = new Array
+export async function main(ns) {
+}
+
+function scanAll(ns, hostname) {
+	if(allServers.includes(hostname)) {
+		return
+	}
+	allServers.push(hostname)
+	var hosts = ns.scan(hostname)
+	for (var i = 0; i < hosts.length; i++) {
+		scanAll(ns, hosts[i])
+	}
+}
+
+
+export function getAllServers(ns) {
+	if(allServers.length) {
+		return allServers
+	} else {
+		scanAll(ns, "home")
+		return allServers
+	}
+}
+
+export function getAllServersWithAccess(ns) {
+	var all = getAllServers(ns)
+	var result = new Array
+	for(var i = 0; i < all.length; i++) {
+		if(ns.hasRootAccess(all[i]) && all[i] != "home") {
+			result.push(all[i])
+		}
+	}
+	return result
+}
+
+export function getAllNukedServers(ns) {
+	var allServersWithAccess = getAllServersWithAccess(ns)
+	var result = new Array
+	for(var i = 0; i < allServersWithAccess.length; i++) {
+		if(!allServersWithAccess[i].startsWith("server-")) {
+			result.push(allServersWithAccess[i])
+		}
+	}
+	return result
+}
+
+export function getAllPurchasedServers(ns) {
+	return ns.getPurchasedServers()
+}
