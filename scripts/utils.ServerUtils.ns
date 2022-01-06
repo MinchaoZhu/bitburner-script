@@ -1,4 +1,5 @@
 /** @param {NS} ns **/
+
 let allServers = new Array
 export async function main(ns) {
 }
@@ -24,19 +25,21 @@ export function getAllServers(ns) {
 	}
 }
 
-export function getAllServersWithAccess(ns) {
+export function getServersWithAccess(ns) {
 	var all = getAllServers(ns)
 	var result = new Array
 	for(var i = 0; i < all.length; i++) {
-		if(ns.hasRootAccess(all[i]) && all[i] != "home") {
+		if(all[i].startsWith("server-")) {
+			result.push(all[i])
+		} else if (ns.hasRootAccess(all[i]) && all[i] != "home") {
 			result.push(all[i])
 		}
 	}
 	return result
 }
 
-export function getAllNukedServers(ns) {
-	var allServersWithAccess = getAllServersWithAccess(ns)
+export function getNukedServers(ns) {
+	var allServersWithAccess = getServersWithAccess(ns)
 	var result = new Array
 	for(var i = 0; i < allServersWithAccess.length; i++) {
 		if(!allServersWithAccess[i].startsWith("server-")) {
@@ -46,6 +49,17 @@ export function getAllNukedServers(ns) {
 	return result
 }
 
-export function getAllPurchasedServers(ns) {
+export function getOwnedServers(ns) {
 	return ns.getPurchasedServers()
+}
+
+export function getServersWithNoAccess(ns) {
+	var all = getAllServers(ns)
+	var result = new Array
+	for(var i = 0; i < all.length; i++) {
+		if(!ns.hasRootAccess(all[i])) {
+			result.push(all[i])
+		}
+	}
+	return result
 }
