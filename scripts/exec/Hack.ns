@@ -1,0 +1,13 @@
+/** @param {NS} ns **/
+
+export async function main(ns) {
+	var targetHost = ns.args[0]
+	var maxMoney = ns.getServerMaxMoney(targetHost)
+	var threshHold = maxMoney * 0.9
+
+	if (ns.getServerMoneyAvailable(targetHost) > threshHold) {
+		ns.print("host: "+ targetHost + ", current money: " + ns.getServerMoneyAvailable(targetHost))
+		ns.print("host: "+ targetHost + ", minimum money: " + threshHold)
+		await ns.hack(targetHost)
+	}	
+}

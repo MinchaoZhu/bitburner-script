@@ -1,0 +1,14 @@
+/** @param {NS} ns **/
+import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+
+export async function main(ns) {
+	while(true) {
+		var servers = ServerUtils.getOwnedServers(ns)
+		servers.forEach(server => {
+			ns.run("/scripts/exec/CopyScripts.ns", 1, server)
+			ns.exec("/scripts/auto/HackRand.ns", server)
+		})
+		await ns.sleep(10000)
+	}
+
+}

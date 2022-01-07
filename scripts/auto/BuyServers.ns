@@ -1,5 +1,5 @@
 /** @param {NS} ns **/
-import * as ServerUtils from "utils.ServerUtils.ns"
+import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
 
 function getServerName(ram, index) {
 	// server-4-24 
