@@ -9,8 +9,15 @@ function getServerName(ram, index) {
 
 function buyServer(ns, ram, index) {
     var serverName = getServerName(ram, index)
-    ns.purchaseServer(serverName, ram)
-    ns.tprint("New server: " + serverName)
+	if(ns.purchaseServer(serverName, ram) != "") {
+    	ns.tprint("New server: " + serverName)
+	}
+}
+
+function buyFilledServers(ns) {
+    for(var i = 0; i < ns.getPurchasedServerLimit(); i++) {
+		buyServer(ns, 64, i)
+	}
 }
 
 function scanAndBuy(ns) {
@@ -53,6 +60,7 @@ function scanAndBuy(ns) {
 }
 
 export async function main(ns) {
+	buyFilledServers(ns)
     while(true) {
         scanAndBuy(ns)
 		await ns.sleep(200)
