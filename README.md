@@ -3,9 +3,13 @@ bitburner-script
 
 ## structures
 - scripts
+
     |-- auto        # auto run script, daemon scripts
+
     |-- exec        # one-time run script 
+    
     |-- stock       # stock relative
+    
     |-- utils       # helper utils
     
 ## Usage
