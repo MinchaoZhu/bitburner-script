@@ -9,6 +9,7 @@ export async function main(ns) {
 					"/scripts/auto/stopTrade.ns",
 					"/scripts/auto/stopTradeAndSold.ns",
 					"/scripts/auto/tradeStocks.ns",
+					"/scripts/exec/allMoney.ns",
 					"/scripts/exec/CopyScripts.ns",
 					"/scripts/exec/ForceGrow.ns",
 					"/scripts/exec/ForceWeaken.ns",

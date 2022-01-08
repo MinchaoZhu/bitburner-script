@@ -106,6 +106,7 @@ export async function main(ns) {
 			ns.tprint("Stock: [" + sym + "] sold all, gained: " + (getGained(ns, sym)/1000000).toFixed(2) + "m")
 			ns.print("sell all, gained:"+ (getGained(ns, sym)/1000000).toFixed(2) + "m")
 			ns.stock.sell(sym, toSell)
+			maxGained = 0
 			await ns.sleep(sellCoolDownRound * coolDownTime)
 		} else {
 			var toBuy = buyCheck(ns, sym) 
