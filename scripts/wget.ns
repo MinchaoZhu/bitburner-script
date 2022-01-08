@@ -1,0 +1,32 @@
+/** @param {NS} ns **/
+export async function main(ns) {
+	var scripts = [ 
+					"/scripts/auto/BuyServers.ns",
+					"/scripts/auto/Hack.ns",
+					"/scripts/auto/HackRand.ns",
+					"/scripts/auto/Nuke.ns",
+					"/scripts/auto/StockGrow.ns",
+					"/scripts/auto/stopTrade.ns",
+					"/scripts/auto/stopTradeAndSold.ns",
+					"/scripts/auto/tradeStocks.ns",
+					"/scripts/exec/CopyScripts.ns",
+					"/scripts/exec/ForceGrow.ns",
+					"/scripts/exec/ForceWeaken.ns",
+					"/scripts/exec/Grow.ns",
+					"/scripts/exec/Hack.ns",
+					"/scripts/exec/HackOne.ns",
+					"/scripts/exec/StockGrow.ns",
+					"/scripts/exec/Weaken.ns",
+					"/scripts/exec/allMoney.ns",
+					"/scripts/remote/HackRand.ns",
+					"/scripts/stock/tradeOne.ns",
+					"/scripts/utils/MathUtils.ns",
+					"/scripts/utils/ServerUtils.ns" 
+					]
+
+	for(var i = 0; i < scripts.length; i++) {
+		var urlPrefix = "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main"
+		var url = urlPrefix + scripts[i]
+		await ns.wget(url, scripts[i], "home")
+	}
+}
