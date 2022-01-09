@@ -1,0 +1,25 @@
+/** @param {NS} ns **/
+import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+
+export async function main(ns) {
+	var script = ns.args[0]
+	var threads = ns.args[1]
+	var argsNum = ns.args[2]
+
+	threads = Math.ceil(threads)
+
+	var ownedServers = ServerUtils.getOwnedServers(ns)
+
+	ownedServers.forEach(server => {
+		if(argsNum == 0) {
+			ns.exec(script, server, threads)
+		} else if(argsNum == 1) {
+			ns.exec(script, server, threads, ns.args[3])
+		} else if(argsNum == 2) {
+			ns.exec(script, server, threads, ns.args[3], ns.args[4])
+		} else if(argsNum == 3) {
+			ns.exec(script, server, threads, ns.args[3], ns.args[4], ns.args[5])
+		}
+	})
+
+}

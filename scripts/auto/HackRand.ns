@@ -4,11 +4,11 @@ import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
 
 export async function main(ns) {
 	while(true) {
-		var servers = ServerUtils.getNukedServers(ns)
+		var servers = ServerUtils.getHackableServers(ns)
 		var index = MathUtils.getRandInt(ns) % servers.length
 
 		ns.print("server to be hacked: ", servers[index])
-		ns.run("/scripts/exec/HackOne.ns", 1, servers[index])
+		ns.run("/scripts/exec/HackOneV2.ns", 1, servers[index])
 		await ns.sleep(100)
 	}
 }

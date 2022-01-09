@@ -1,0 +1,11 @@
+/** @param {NS} ns **/
+import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+
+let preBatchForOnePath = "/scripts/remote/PreBatchForOne.ns"
+
+export async function main(ns) {
+	var hackableServers = ServerUtils.getHackableServers(ns)
+	hackableServers.forEach(server => {
+		ns.run(preBatchForOnePath, 1, server)
+	})
+}

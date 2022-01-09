@@ -1,9 +1,10 @@
 /** @param {NS} ns **/
+import * as MathUtils from "/scripts/utils/MathUtils.ns"
 
 export async function main(ns) {
 	var server = ns.args[0]
 	while(true) {
-		ns.run("/scripts/exec/HackOne.ns", 1, server)
-		await ns.sleep(100)
+		ns.run("/scripts/exec/HackOneV2.ns", 1, server, MathUtils.getRandInt())
+		await ns.sleep(10)
 	}
 }

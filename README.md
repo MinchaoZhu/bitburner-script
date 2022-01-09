@@ -30,14 +30,29 @@ run wget.ns
 3. alias
 
 ```bash
-alias nuke="run /scripts/auto/Nuke.ns";
-alias hackRand="run /scripts/auto/HackRand.ns";
-alias boom="run /scripts/remote/HackRand.ns";
-alias autoBuy="run /scripts/auto/BuyServers.ns";
-alias stock="run /scripts/auto/tradeStocks.ns";
-alias stopStock="run scripts/auto/stopTrade.ns";
-alias soldStock="run scripts/auto/stopTradeAndSold.ns";
-alias money="run scripts/exec/allMoney.ns"
+alias nuke=run /scripts/auto/Nuke.ns
+
+alias hackRand=run /scripts/auto/HackRand.ns
+
+alias boom=run /scripts/remote/HackRand.ns
+
+alias autoBuy=run /scripts/auto/BuyServers.ns
+
+alias stock=run /scripts/auto/tradeStocks.ns
+
+alias stopStock=run scripts/auto/stopTrade.ns
+
+alias soldStock=run scripts/auto/stopTradeAndSold.ns
+
+alias money=run scripts/exec/allMoney.ns
+
+alias hackOne=run scripts/auto/Hack.ns
+
+alias preBatch=run /scripts/remote/PreBatch.ns
+
+alias copyScripts=run scripts/remote/CopyScripts.ns
+
+alias info=run /scripts/exec/Info.ns
 ```
 ### Commands
 1. nuke
@@ -48,8 +63,8 @@ The server running it will randomly hacking all nuked servers continuously.
 
 Attention: will consume **all** memory
 
-3. autoBuy
-Continuously auto-buy and upgrade purchased servers. The server name in format 
+3. autoBuy [targetRam]
+Continuously auto-buy and upgrade purchased servers util all purchased servers' ram reachs targetRam. The server name in format 
 ```
 server-{ram}-{index}
 ```
@@ -76,6 +91,15 @@ Stop auto trading and all stock shares will be sold.
 
 Print your cash and stock value.
 
+9. info [host]
 
+Print host info
 
+10. preBatch
+
+Weaken and grow all hackable servers util they are in min sercurity level and max money. The working scripts are running on purchased server.
+
+11. copyScripts
+
+Copy scripts folder into all purchased servers.
 

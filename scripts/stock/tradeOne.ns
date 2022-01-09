@@ -1,7 +1,7 @@
 /** @param {NS} ns **/
 
 // config
-let bidChance = 0.52
+let bidChance = 0.53
 let sellChance = 0.505
 let sellLosePercent = 0.1
 let sellIncrPercent = 0.3 
@@ -106,7 +106,6 @@ export async function main(ns) {
 			ns.tprint("Stock: [" + sym + "] sold all, gained: " + (getGained(ns, sym)/1000000).toFixed(2) + "m")
 			ns.print("sell all, gained:"+ (getGained(ns, sym)/1000000).toFixed(2) + "m")
 			ns.stock.sell(sym, toSell)
-			maxGained = 0
 			await ns.sleep(sellCoolDownRound * coolDownTime)
 		} else {
 			var toBuy = buyCheck(ns, sym) 

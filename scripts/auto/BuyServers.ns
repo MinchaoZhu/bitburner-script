@@ -20,7 +20,7 @@ function buyFilledServers(ns) {
 	}
 }
 
-function scanAndBuy(ns) {
+function scanAndBuy(ns, targetRam) {
     var servers = ServerUtils.getOwnedServers(ns);
     var delimiter = '-'
     var maxRam = 0;
@@ -49,6 +49,10 @@ function scanAndBuy(ns) {
         nextIndex = 0
     }
 
+	if(nextRam > targetRam) {
+		return 0
+	}
+
     if(ns.getPurchasedServerCost(nextRam) < 0.75 * ns.getPlayer().money) {
         var oldServer = getServerName(nextRam / 2, nextIndex)
         ns.tprint("Old server: " + oldServer)
@@ -56,13 +60,14 @@ function scanAndBuy(ns) {
         ns.deleteServer(oldServer)
         buyServer(ns, nextRam, nextIndex)
     }
-
+	
+	return 1
 }
 
 export async function main(ns) {
 	buyFilledServers(ns)
-    while(true) {
-        scanAndBuy(ns)
+	var targetRam = ns.args[0]
+    while(scanAndBuy(ns, targetRam)) {
 		await ns.sleep(200)
     }
 }

@@ -1,0 +1,11 @@
+/** @param {NS} ns **/
+import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+
+let copyScriptsPath = "/scripts/exec/CopyScripts.ns"
+
+export async function main(ns) {
+	var servers = ServerUtils.getOwnedServers(ns)	
+	servers.forEach(server => {
+		ns.run(copyScriptsPath, 1, server)		
+	})
+}

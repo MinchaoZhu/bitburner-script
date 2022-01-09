@@ -1,0 +1,87 @@
+/** @param {NS} ns **/
+import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+
+let defaultThreads = 40960
+let maxThreads = 204800
+let remoteRunPath = "/scripts/exec/RunScriptOnOwned.ns" 
+let doWeakenPath = "/scripts/exec/doWeaken.ns"
+let doGrowPath = "/scripts/exec/doGrow.ns"
+
+
+async function preBatchWeaken(ns, host) {
+	var currentSafeLevel = ns.getServerSecurityLevel(host)
+	var minSafeLevel = ns.getServerMinSecurityLevel(host)
+
+	while(currentSafeLevel > minSafeLevel) {
+		var oneThreadDecr = ns.weakenAnalyze(1, 1)
+		var fullDecr = currentSafeLevel - minSafeLevel
+
+		var fullThreads = fullDecr / oneThreadDecr
+		var actionThreads = fullThreads
+		if(fullThreads >= maxThreads) {
+			actionThreads = maxThreads
+		}
+		var weakenTime = ns.getWeakenTime(host)
+		var threadsPerServer = actionThreads / ServerUtils.getOwnedServers(ns).length 
+
+		ns.run(remoteRunPath, 1, doWeakenPath, threadsPerServer, 2, host, 0)
+		await ns.sleep(weakenTime)
+		currentSafeLevel = ns.getServerSecurityLevel(host)
+		minSafeLevel = ns.getServerMinSecurityLevel(host)
+	}
+}
+
+async function growAndWeaken(ns, host, growThreads) {
+	var weakenDelay = 3000
+	var serverNums = ServerUtils.getOwnedServers(ns).length
+	var incrSafeLevel = ns.growthAnalyzeSecurity(defaultThreads)
+	var oneThreadDecr = ns.weakenAnalyze(1, 1)
+	var weakenThreads = (incrSafeLevel / oneThreadDecr) * 1.05
+
+	var growTime = ns.getGrowTime(host)
+	var weakenTime = ns.getWeakenTime(host)
+
+	if(weakenTime < growTime) {
+		weakenDelay += growTime - weakenTime
+	}
+	ns.run(remoteRunPath, 1, doGrowPath, Math.ceil(growThreads / serverNums), 2, host, 0)
+	await ns.sleep(weakenDelay)
+	ns.run(remoteRunPath, 1, doWeakenPath, Math.ceil(weakenThreads / serverNums), 2, host, 0)
+	await ns.sleep(weakenTime)
+}
+
+async function preBatchGrow(ns, host) {
+	var currentMoney = ns.getServerMoneyAvailable(host)
+	var maxMoney = ns.getServerMaxMoney(host)
+	
+	while(currentMoney < maxMoney) {
+		var currentMoney = ns.getServerMoneyAvailable(host)
+		var maxMoney = ns.getServerMaxMoney(host)
+
+		var growTime = ns.getGrowTime(host)
+		var weakenTime = ns.getWeakenTime(host)
+
+		if(currentMoney <= 1000) {
+			await growAndWeaken(ns, host, defaultThreads)
+		} else {
+			var growThreads = ns.growthAnalyze(host, Math.ceil(maxMoney / currentMoney))
+			growThreads = Math.min(growThreads, maxThreads)
+			await growAndWeaken(ns, host, growThreads)
+		}
+		await ns.sleep(3000)
+		currentMoney = ns.getServerMoneyAvailable(host)
+		maxMoney = ns.getServerMaxMoney(host)
+	}
+}
+
+async function preBatchForHost(ns, host) {
+	ns.tprint("Prebatch job for host [" + host + "] starts")
+	await preBatchWeaken(ns, host)
+	await preBatchGrow(ns, host)
+	ns.tprint("Prebatch job for host [" + host + "] ends")
+}
+
+export async function main(ns) {
+	var host = ns.args[0]
+	await preBatchForHost(ns, host)
+}

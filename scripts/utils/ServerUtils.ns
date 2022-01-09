@@ -28,7 +28,19 @@ export function getNukedServers(ns) {
 			result.push(all[i])
 		}
 	}
-	return result}
+	return result
+}
+
+export function getHackableServers(ns) {
+	var all = getNukedServers(ns)
+	var result = new Array
+	for(var i = 0; i < all.length; i++) {
+		if (ns.getServerGrowth(all[i]) >= 5) {
+			result.push(all[i])
+		}
+	}
+	return result
+}
 
 export function getOwnedServers(ns) {
 	return ns.getPurchasedServers()
