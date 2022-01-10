@@ -18,41 +18,43 @@ bitburner-script
 1. Download initial script
 
 ```bash
-wget https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.ns
+wget https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.ns"
 ```
 
 2. Download all scripts
 
 ```bash
-run wget.ns
+run wget.ns"
 ```
 
 3. alias
 
 ```bash
-alias nuke=run /scripts/auto/Nuke.ns
+alias nuke="run /scripts/auto/Nuke.ns"
 
-alias hackRand=run /scripts/auto/HackRand.ns
+alias hackRand="run /scripts/auto/HackRand.ns"
 
-alias boom=run /scripts/remote/HackRand.ns
+alias boom="run /scripts/remote/HackRand.ns"
 
-alias autoBuy=run /scripts/auto/BuyServers.ns
+alias autoBuy="run /scripts/auto/BuyServers.ns"
 
-alias stock=run /scripts/auto/tradeStocks.ns
+alias stock="run /scripts/auto/tradeStocks.ns"
 
-alias stopStock=run scripts/auto/stopTrade.ns
+alias stopStock="run scripts/auto/stopTrade.ns"
 
-alias soldStock=run scripts/auto/stopTradeAndSold.ns
+alias soldStock="run scripts/auto/stopTradeAndSold.ns"
 
-alias money=run scripts/exec/allMoney.ns
+alias money="run scripts/exec/allMoney.ns"
 
-alias hackOne=run scripts/auto/Hack.ns
+alias hackOne="run scripts/auto/Hack.ns"
 
-alias preBatch=run /scripts/remote/PreBatch.ns
+alias preBatch="run /scripts/remote/PreBatch.ns"
 
-alias copyScripts=run scripts/remote/CopyScripts.ns
+alias copyScripts="run scripts/remote/CopyScripts.ns"
 
-alias info=run /scripts/exec/Info.ns
+alias info="run /scripts/exec/Info.ns"
+
+alias BatchHack="run /scripts/batch_hack/Start.js"
 ```
 ### Commands
 1. nuke
@@ -61,7 +63,7 @@ Auto-nuke all servers continuously according your hacking level and owned xxx.ex
 2. hackRand
 The server running it will randomly hacking all nuked servers continuously.
 
-Attention: will consume **all** memory
+Attention: will c.ns"ume **all** memory
 
 3. autoBuy [targetRam]
 Continuously auto-buy and upgrade purchased servers util all purchased servers' ram reachs targetRam. The server name in format 
@@ -73,7 +75,7 @@ index is 0, 1, 2, ..., 24
 
 4. boom
 
-On all purchased servers, hackRand is runned. That means all purchased servers will help you to hack money
+On all purchased servers, hackRand is runned. That me.ns" all purchased servers will help you to hack money
 
 5. stock
 
@@ -103,3 +105,4 @@ Weaken and grow all hackable servers util they are in min sercurity level and ma
 
 Copy scripts folder into all purchased servers.
 
+12. 

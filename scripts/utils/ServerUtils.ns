@@ -52,7 +52,6 @@ export function getServersWithAccess(ns) {
 	return nuked.concat(owned)
 }
 
-
 export function getServersWithNoAccess(ns) {
 	var all = getAllServers(ns)
 	var result = new Array
@@ -62,4 +61,14 @@ export function getServersWithNoAccess(ns) {
 		}
 	}
 	return result
+}
+
+export function getComputingServers(ns, option) {
+	if (option === "home") {
+		return ["home"]
+	} else if (option === "all") {
+		return getOwnedServers(ns).concat(["home"])
+	} else {
+		return getOwnedServers(ns)
+	}
 }

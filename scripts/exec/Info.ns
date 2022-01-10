@@ -7,4 +7,7 @@ export async function main(ns) {
 	ns.tprint("min security    : " + ns.getServerMinSecurityLevel(host))
 	ns.tprint("current money   : " + (ns.getServerMoneyAvailable(host)/1000000).toFixed(2) + "m")
 	ns.tprint("max money       : " + (ns.getServerMaxMoney(host)/1000000).toFixed(2) + "m")
+	ns.tprint("hack time       : " + (ns.getHackTime(host)/1000).toFixed(2) + "s")
+	ns.tprint("grow time       : " + (ns.getGrowTime(host)/1000).toFixed(2) + "s")
+	ns.tprint("weaken time     : " + (ns.getWeakenTime(host)/1000).toFixed(2) + "s")
 }
