@@ -59,61 +59,66 @@ alias info="run /scripts/exec/Info.ns";
 alias BatchHack="run /scripts/batch_hack/Start.js";
 ```
 ### Commands
-1. nuke
+1. ```nuke```
+
 Auto-nuke all servers continuously according your hacking level and owned xxx.exe
 
-2. hackRand
+2. ```hackRand```
+
 The server running it will randomly hacking all nuked servers continuously.
 
 Attention: will c.ns"ume **all** memory
 
-3. autoBuy [targetRam]
+3. ```autoBuy <targetRam>```
+
 Continuously auto-buy and upgrade purchased servers util all purchased servers' ram reachs targetRam. The server name in format 
 ```
 server-{ram}-{index}
 ```
+
 ram is 128, 512, 1024, ...
+
 index is 0, 1, 2, ..., 24
 
-4. boom
+4. ```boom```
 
 On all purchased servers, hackRand is runned. That me.ns" all purchased servers will help you to hack money
 
-5. stock
+5. ```stock```
 
 Auto trade stocks.
 
-6. stopStock
+6. ```stopStock```
 
 Stop auto trading but no stock share will be sold.
 
-7. soldStock
+7. ```soldStock```
 
 Stop auto trading and all stock shares will be sold.
 
-8. money
+8. ```money```
 
 Print your cash and stock value.
 
-9. info [host]
+9. ```info <host>```
 
 Print host info
 
-10. preBatch
+10. ```preBatch```
 
 Weaken and grow all hackable servers util they are in min sercurity level and max money. The working scripts are running on purchased server.
 
-11. copyScripts
+11. ```copyScripts```
 
-Copy scripts folder into all purchased servers.
+Copy scripts folder to all purchased servers.
 
-12. batchHack <start|stop> <1|home|all>
+12. ```batchHack <start|stop> <1|home|all>```
 
 Start or stop batch hack on purchased server or home or all servers.
 
-1: on only purchased servers
+```1```: on only purchased servers
 
-home: on only home server
+```home```: on only home server
 
-all: on both home and purchased servers
+```all```: on both home and purchased servers
 
