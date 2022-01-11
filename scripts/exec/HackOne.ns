@@ -5,7 +5,7 @@ export async function main(ns) {
 	var server = ns.args[0]
 	var maxRam = ns.getServerRam(ns.getHostname())[0]
 	var maxThreads = maxRam / 2
-	var threads = Math.min(64, maxThreads)
+	var threads = Math.min(2, maxThreads)
 	var maxMoney = ns.getServerMaxMoney(server)
 	var threshHold = maxMoney * 0.9
 	if (ns.getServerMoneyAvailable(server) > threshHold) {
