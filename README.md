@@ -107,6 +107,13 @@ Weaken and grow all hackable servers util they are in min sercurity level and ma
 
 Copy scripts folder into all purchased servers.
 
-12. batchHack {start/stop} {1/home/all}
+12. batchHack <start|stop> <1|home|all>
 
-Auto batch hack on purchased server or home or all servers.
+Start or stop batch hack on purchased server or home or all servers.
+
+1: on only purchased servers
+
+home: on only home server
+
+all: on both home and purchased servers
+
