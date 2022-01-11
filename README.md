@@ -18,7 +18,7 @@ bitburner-script
 1. Download initial script
 
 ```bash
-wget https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.ns"
+wget "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.ns" wget.ns
 ```
 
 2. Download all scripts
@@ -105,4 +105,6 @@ Weaken and grow all hackable servers util they are in min sercurity level and ma
 
 Copy scripts folder into all purchased servers.
 
-12. 
+12. batchHack {start/stop} {1/home/all}
+
+Auto batch hack on purchased server or home or all servers.
