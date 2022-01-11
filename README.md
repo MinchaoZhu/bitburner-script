@@ -5,6 +5,8 @@ bitburner-script
 - scripts
 
     |-- auto        # auto run script, daemon scripts
+    
+    |-- batchHack   # batch hack relative
 
     |-- exec        # one-time run script 
     
