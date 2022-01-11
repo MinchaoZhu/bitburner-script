@@ -2,7 +2,8 @@
 import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
 import * as MathUtils from "/scripts/utils/MathUtils.ns"
 
-let memThreshHold = 131072 
+// let memThreshHold = 262144 
+let memThreshHold = 262144 
 
 export async function main(ns) {
 	var script = ns.args[0]

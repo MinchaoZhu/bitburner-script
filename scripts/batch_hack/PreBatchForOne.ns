@@ -1,14 +1,12 @@
 /** @param {NS} ns **/
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
 import * as BatchHack from "/scripts/batch_hack/Start.js"
 
 let defaultThreads = 40960
 let maxThreads = 204800
-let remoteRunPath = "/scripts/exec/RunScriptOnOwned.ns" 
 let doWeakenPath = "/scripts/exec/doWeaken.ns"
 let doGrowPath = "/scripts/exec/doGrow.ns"
 
-async function preBatchWeaken(ns, host, option) {
+async function preBatchWeaken(ns, host) {
 	var currentSafeLevel = ns.getServerSecurityLevel(host)
 	var minSafeLevel = ns.getServerMinSecurityLevel(host)
 
@@ -22,20 +20,18 @@ async function preBatchWeaken(ns, host, option) {
 			actionThreads = maxThreads
 		}
 		var weakenTime = ns.getWeakenTime(host)
-		var threadsPerServer = actionThreads / ServerUtils.getComputingServers(ns, option).length 
 
-		ns.run(remoteRunPath, 1, doWeakenPath, threadsPerServer, option, 2, host, 0)
+		ns.run(doWeakenPath, actionThreads, host, 0)
 		await ns.sleep(weakenTime + 1000)
 		currentSafeLevel = ns.getServerSecurityLevel(host)
 		minSafeLevel = ns.getServerMinSecurityLevel(host)
 	}
 }
 
-async function growAndWeaken(ns, host, growThreads, option) {
+async function growAndWeaken(ns, host, growThreads) {
 	var weakenDelay = 3000
-	var serverNums = ServerUtils.getComputingServers(ns, option).length
 	var incrSafeLevel = ns.growthAnalyzeSecurity(defaultThreads)
-	var oneThreadDecr = ns.weakenAnalyze(1, 1)
+	var oneThreadDecr = ns.weakenAnalyze(1, ns.getServer().cpuCores)
 	var weakenThreads = (incrSafeLevel / oneThreadDecr) * 1.05
 
 	var growTime = ns.getGrowTime(host)
@@ -44,13 +40,13 @@ async function growAndWeaken(ns, host, growThreads, option) {
 	if(weakenTime < growTime) {
 		weakenDelay += growTime - weakenTime
 	}
-	ns.run(remoteRunPath, 1, doGrowPath, Math.ceil(growThreads / serverNums), option, 2, host, 0)
+	ns.run(doGrowPath, Math.ceil(growThreads), host, 0)
 	await ns.sleep(weakenDelay)
-	ns.run(remoteRunPath, 1, doWeakenPath, Math.ceil(weakenThreads / serverNums), option, 2, host, 0)
+	ns.run(doWeakenPath, Math.ceil(weakenThreads), host, 0)
 	await ns.sleep(weakenTime)
 }
 
-async function preBatchGrow(ns, host, option) {
+async function preBatchGrow(ns, host) {
 	var currentMoney = ns.getServerMoneyAvailable(host)
 	var maxMoney = ns.getServerMaxMoney(host)
 	
@@ -62,11 +58,11 @@ async function preBatchGrow(ns, host, option) {
 		var weakenTime = ns.getWeakenTime(host)
 
 		if(currentMoney <= 1000) {
-			await growAndWeaken(ns, host, defaultThreads, option)
+			await growAndWeaken(ns, host, defaultThreads)
 		} else {
 			var growThreads = ns.growthAnalyze(host, Math.ceil(maxMoney / currentMoney))
 			growThreads = Math.min(growThreads, maxThreads)
-			await growAndWeaken(ns, host, growThreads, option)
+			await growAndWeaken(ns, host, growThreads)
 		}
 		await ns.sleep(3000)
 		currentMoney = ns.getServerMoneyAvailable(host)
@@ -74,16 +70,15 @@ async function preBatchGrow(ns, host, option) {
 	}
 }
 
-async function preBatchForHost(ns, host, option) {
+async function preBatchForHost(ns, host) {
 	ns.tprint("Prebatch job for host [" + host + "] starts")
-	await preBatchWeaken(ns, host, option)
-	await preBatchGrow(ns, host, option)
+	await preBatchWeaken(ns, host)
+	await preBatchGrow(ns, host)
 	ns.tprint("Prebatch job for host [" + host + "] ends")
 }
 
 export async function main(ns) {
 	var host = ns.args[0]
-	var option = ns.args[1]
-	await preBatchForHost(ns, host, option)
+	await preBatchForHost(ns, host)
 	BatchHack.prepared[host] = true
 }

@@ -42,17 +42,17 @@ alias autoBuy="run /scripts/auto/BuyServers.ns";
 
 alias stock="run /scripts/auto/tradeStocks.ns";
 
-alias stopStock="run scripts/auto/stopTrade.ns";
+alias stopStock="run /scripts/auto/stopTrade.ns";
 
-alias soldStock="run scripts/auto/stopTradeAndSold.ns";
+alias soldStock="run /scripts/auto/stopTradeAndSold.ns";
 
-alias money="run scripts/exec/allMoney.ns";
+alias money="run /scripts/exec/allMoney.ns";
 
-alias hackOne="run scripts/auto/Hack.ns";
+alias hackOne="run /scripts/auto/Hack.ns";
 
 alias preBatch="run /scripts/remote/PreBatch.ns";
 
-alias copyScripts="run scripts/remote/CopyScripts.ns";
+alias copyScripts="run /scripts/remote/CopyScripts.ns";
 
 alias info="run /scripts/exec/Info.ns";
 

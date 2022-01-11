@@ -1,6 +1,5 @@
 /** @param {NS} ns **/
 import * as BatchHack from "/scripts/batch_hack/Start.js"
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
 import * as MathUtils from "/scripts/utils/MathUtils.ns"
 
 /**
@@ -12,16 +11,13 @@ import * as MathUtils from "/scripts/utils/MathUtils.ns"
  *           GGGGGGGGGGGGGGGGGGGG
  * 
  */
-
-let remoteRunPath = "/scripts/exec/RunScriptOnOwned.ns" 
+let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.ns"
 let doWeakenPath = "/scripts/exec/doWeaken.ns"
 let doGrowPath = "/scripts/exec/doGrow.ns"
 let doHackPath = "/scripts/exec/doHack.ns"
-let defaultDelay = 50
-let hackRatio = 0.95
+let defaultDelay = 20
+let hackRatio = 0.70
 let batchDelay = 80
-let startDelayUnit = 1000
-
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
@@ -39,31 +35,40 @@ function getDelays(ns, host) {
 }
 
 function batchAnalyze(ns, host) {
-	var hackAmount = ns.getServerMaxMoney(host) * hackRatio
-	var hackThreads = Math.ceil(ns.hackAnalyzeThreads(host, hackAmount))
+	var server = ns.getServer()
+
+	var hackThreads = hackRatio / ns.hackAnalyze(host)
 	var safeIncrHack = ns.hackAnalyzeSecurity(hackThreads)
-	var weakenThreads1 = 1.03 * safeIncrHack / ns.weakenAnalyze(1, 1)
+	var weakenThreads1 = 1.03 * safeIncrHack / ns.weakenAnalyze(1, server.cpuCores)
 	
 	var growThreads = ns.growthAnalyze(host, 1.0 / (1 - hackRatio)) * 1.03
 	var safeIncrGrow = ns.growthAnalyzeSecurity(growThreads)
-	var weakenThreads2 = safeIncrGrow / ns.weakenAnalyze(1, 1) * 1.03
+	var weakenThreads2 = safeIncrGrow / ns.weakenAnalyze(1, server.cpuCores) * 1.03
 
 	return {
-		threadsH : hackThreads,
-		threadsW1: weakenThreads1,
-		threadsG : growThreads,
-		threadsW2: weakenThreads2
+		threadsH : Math.floor(hackThreads),
+		threadsW1: Math.ceil(weakenThreads1),
+		threadsG : Math.ceil(growThreads),
+		threadsW2: Math.ceil(weakenThreads2)
 	}
 }
 
+function batchMemNeeded(ns, batchAnalysis) {
+	var weakenMem = ns.getScriptRam(doWeakenPath)
+	var growMem = ns.getScriptRam(doGrowPath)
+	var hackMem = ns.getScriptRam(doHackPath)
 
-async function batchHack(ns, host, delays, batchAnalysis, option) {
-	var serverNums = ServerUtils.getComputingServers(ns, option).length
+	return weakenMem * (batchAnalysis.threadsW1 + batchAnalysis.threadsW2)
+		+  growMem * batchAnalysis.threadsG
+		+  hackMem * batchAnalysis.threadsH
+}
 
-	ns.run(remoteRunPath, 1, doWeakenPath, Math.ceil(batchAnalysis.threadsW1 / serverNums), option, 2, host, 0)
-	ns.run(remoteRunPath, 1, doWeakenPath, Math.ceil(batchAnalysis.threadsW2 / serverNums), option, 2, host, delays.delayW)
-	ns.run(remoteRunPath, 1, doGrowPath, Math.ceil(batchAnalysis.threadsG / serverNums), option, 2, host, delays.delayG)
-	ns.run(remoteRunPath, 1, doHackPath, Math.ceil(batchAnalysis.threadsH / serverNums), option, 2, host, delays.delayH)
+
+async function batchHack(ns, host, delays, batchAnalysis) {
+	ns.run(doWeakenPath, batchAnalysis.threadsW1, host, 0, MathUtils.getRandInt(ns))
+	ns.run(doWeakenPath, batchAnalysis.threadsW2, host, delays.delayW, MathUtils.getRandInt(ns))
+	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
+	ns.run(doHackPath,   batchAnalysis.threadsH,  host, delays.delayH, MathUtils.getRandInt(ns))
 }
 
 function logEndTime(ns, host) {
@@ -73,30 +78,43 @@ function logEndTime(ns, host) {
 	var hackTime = ns.getHackTime(host)
 	ns.tprint("host: " + host)
 	ns.tprint("delays: " + JSON.stringify(delays))
-	ns.tprint("end time for H: " + ((delays.delayH + hackTime)/1000).toFixed(3) + "s")
+	ns.tprint("end time for H:  " + ((delays.delayH + hackTime)/1000).toFixed(3) + "s")
 	ns.tprint("end time for W1: " + ((weakenTime)/1000).toFixed(3) + "s")
-	ns.tprint("end time for G: " + ((delays.delayG + growTime)/1000).toFixed(3) + "s")
+	ns.tprint("end time for G:  " + ((delays.delayG + growTime)/1000).toFixed(3) + "s")
 	ns.tprint("end time for W2: " + ((delays.delayW + weakenTime)/1000).toFixed(3) + "s")
 }
 
 function logBatchAnalyze(ns, host) {
 	var batchAnalysis = batchAnalyze(ns, host)
-	ns.tprint("host: " + host)
-	ns.tprint("batchAnalysis: " + JSON.stringify(batchAnalysis))
+	ns.tprint("batchAnalysis:   " + JSON.stringify(batchAnalysis))
+}
+function logBatchMemNeeded(ns, batchAnalysis) {
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+	ns.tprint("mem needed:      " + memNeeded + "GB")
 }
 
 export async function main(ns) {
 	var host = ns.args[0]
-	var option = ns.args[1]
+
+	while(BatchHack.prepared[host] != true) {
+		ns.run(preBatchForOnePath, 1, host)
+		await ns.sleep(10000)
+	}
+
 	var delays = getDelays(ns, host)
 	var batchAnalysis = batchAnalyze(ns, host)
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+
 	logEndTime(ns, host)
 	logBatchAnalyze(ns, host)
-
-	await ns.sleep(startDelayUnit * (MathUtils.getRandInt(ns) % 20))
+	logBatchMemNeeded(ns, batchAnalysis)
 
 	while(BatchHack.prepared[host] === true) {
-		batchHack(ns, host, delays, batchAnalysis, option)
+		var server = ns.getServer()
+		var remainingMem = server.maxRam - server.ramUsed
+		if(remainingMem >= 1.5 * memNeeded) {
+			batchHack(ns, host, delays, batchAnalysis)
+		}
 		await ns.sleep(batchDelay)
 	}
 }
