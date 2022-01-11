@@ -5,7 +5,10 @@ let copyScriptsPath = "/scripts/exec/CopyScripts.ns"
 
 export async function main(ns) {
 	var servers = ServerUtils.getOwnedServers(ns)	
-	servers.forEach(server => {
-		ns.run(copyScriptsPath, 1, server)		
-	})
+	for(var i = 0; i < servers.length; i++) {
+		server = servers[i]
+		ns.run(copyScriptsPath, 1, server)
+		await ns.sleep(500)
+	}
+	
 }
