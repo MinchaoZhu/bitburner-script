@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
 import * as BatchHack from "/scripts/batch_hack/Start.js"
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
 
 /**
  *  batch: HWGW 
@@ -11,13 +11,14 @@ import * as MathUtils from "/scripts/utils/MathUtils.ns"
  *           GGGGGGGGGGGGGGGGGGGG
  * 
  */
-let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.ns"
-let doWeakenPath = "/scripts/exec/doWeaken.ns"
-let doGrowPath = "/scripts/exec/doGrow.ns"
-let doHackPath = "/scripts/exec/doHack.ns"
+let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
+let doWeakenPath = "/scripts/exec/doWeaken.js"
+let doGrowPath = "/scripts/exec/doGrow.js"
+let doHackPath = "/scripts/exec/doHack.js"
 let defaultDelay = 20
 let hackRatio = 0.70
-let batchDelay = 80
+let batchDelay = 100
+let oneRoundTimeScale = 4
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
@@ -34,6 +35,22 @@ function getDelays(ns, host) {
 	}
 }
 
+function batchMemNeeded(ns, batchAnalysis) {
+	var weakenMem = ns.getScriptRam(doWeakenPath)
+	var growMem = ns.getScriptRam(doGrowPath)
+	var hackMem = ns.getScriptRam(doHackPath)
+	return weakenMem * (batchAnalysis.threadsW1 + batchAnalysis.threadsW2)
+		+  growMem * batchAnalysis.threadsG
+		+  hackMem * batchAnalysis.threadsH
+}
+
+function batchScaleFactor(ns, batchAnalysis) {
+	var ram = ns.getServer().maxRam
+	var batchRam = batchMemNeeded(ns, batchAnalysis)
+	var factor = 0.9 * ram / batchRam
+	return factor > 1 ? 1 : factor
+}
+
 function batchAnalyze(ns, host) {
 	var server = ns.getServer()
 
@@ -45,24 +62,21 @@ function batchAnalyze(ns, host) {
 	var safeIncrGrow = ns.growthAnalyzeSecurity(growThreads)
 	var weakenThreads2 = safeIncrGrow / ns.weakenAnalyze(1, server.cpuCores) * 1.03
 
-	return {
+	var batchAnalysis = {
 		threadsH : Math.floor(hackThreads),
 		threadsW1: Math.ceil(weakenThreads1),
 		threadsG : Math.ceil(growThreads),
 		threadsW2: Math.ceil(weakenThreads2)
 	}
+	var scaleFactor = batchScaleFactor(ns, batchAnalysis)
+	Object.keys(batchAnalysis).forEach(
+	key => {
+	    batchAnalysis[key] *= scaleFactor
+        }
+	)
+	
+	return batchAnalysis
 }
-
-function batchMemNeeded(ns, batchAnalysis) {
-	var weakenMem = ns.getScriptRam(doWeakenPath)
-	var growMem = ns.getScriptRam(doGrowPath)
-	var hackMem = ns.getScriptRam(doHackPath)
-
-	return weakenMem * (batchAnalysis.threadsW1 + batchAnalysis.threadsW2)
-		+  growMem * batchAnalysis.threadsG
-		+  hackMem * batchAnalysis.threadsH
-}
-
 
 async function batchHack(ns, host, delays, batchAnalysis) {
 	ns.run(doWeakenPath, batchAnalysis.threadsW1, host, 0, MathUtils.getRandInt(ns))
@@ -96,25 +110,32 @@ function logBatchMemNeeded(ns, batchAnalysis) {
 export async function main(ns) {
 	var host = ns.args[0]
 
-	while(BatchHack.prepared[host] != true) {
-		ns.run(preBatchForOnePath, 1, host)
-		await ns.sleep(10000)
-	}
-
-	var delays = getDelays(ns, host)
-	var batchAnalysis = batchAnalyze(ns, host)
-	var memNeeded = batchMemNeeded(ns, batchAnalysis)
-
-	logEndTime(ns, host)
-	logBatchAnalyze(ns, host)
-	logBatchMemNeeded(ns, batchAnalysis)
-
-	while(BatchHack.prepared[host] === true) {
-		var server = ns.getServer()
-		var remainingMem = server.maxRam - server.ramUsed
-		if(remainingMem >= 1.5 * memNeeded) {
-			batchHack(ns, host, delays, batchAnalysis)
+	while(true) {
+		var startTime = Date.now()
+		while(BatchHack.prepared[host] != true) {
+			ns.run(preBatchForOnePath, 1, host)
+			await ns.sleep(10000)
 		}
-		await ns.sleep(batchDelay)
+
+		var delays = getDelays(ns, host)
+		var batchAnalysis = batchAnalyze(ns, host)
+		var memNeeded = batchMemNeeded(ns, batchAnalysis)
+
+		logEndTime(ns, host)
+		logBatchAnalyze(ns, host)
+		logBatchMemNeeded(ns, batchAnalysis)
+
+		while(BatchHack.prepared[host] === true) {
+			var server = ns.getServer()
+			var remainingMem = server.maxRam - server.ramUsed
+			if(remainingMem >= 1.05 * memNeeded) {
+				batchHack(ns, host, delays, batchAnalysis)
+			}
+			await ns.sleep(batchDelay)
+			if(Date.now() - start >= oneRoundTimeScale * ns.getWeakenTime(host)) {
+				BatchHack.prepared[host] = false
+			}
+		}
 	}
+
 }

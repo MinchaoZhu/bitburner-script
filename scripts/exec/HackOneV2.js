@@ -1,10 +1,10 @@
 /** @param {NS} ns **/
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
 
 let remainingRatio = 0.25
-let doGrowPath = "/scripts/exec/doGrow.ns"
-let doHackPath = "/scripts/exec/doHack.ns"
-let doWeakenPath = "/scripts/exec/doWeaken.ns"
+let doGrowPath = "/scripts/exec/doGrow.js"
+let doHackPath = "/scripts/exec/doHack.js"
+let doWeakenPath = "/scripts/exec/doWeaken.js"
 
 function getCurrentFilledRatio(ns, target) {
 	return ns.getServerMoneyAvailable(target) / ns.getServerMaxMoney(target)

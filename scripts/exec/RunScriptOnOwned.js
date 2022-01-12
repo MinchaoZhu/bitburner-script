@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
+import * as ServerUtils from "/scripts/utils/ServerUtils.js"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
 
 // let memThreshHold = 262144 
 let memThreshHold = 262144 

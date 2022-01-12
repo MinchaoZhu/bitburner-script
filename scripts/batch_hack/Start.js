@@ -2,14 +2,14 @@
 let prepared = {}
 
 export {prepared}/** @param {NS} ns **/
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
+import * as ServerUtils from "/scripts/utils/ServerUtils.js"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
 
 
 let batchHackForOnePath = "/scripts/batch_hack/Hack.js"
 
 export async function main(ns) {
-	await ns.run("/scripts/remote/CopyScripts.ns")
+	await ns.run("/scripts/remote/CopyScripts.js")
 	await ns.sleep(1000)
 	var option = ns.args[0] // "home" "all"
 	var hackableServers = ServerUtils.getHackableServers(ns)

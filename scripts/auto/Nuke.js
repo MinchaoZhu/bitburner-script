@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
 
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+import * as ServerUtils from "/scripts/utils/ServerUtils.js"
 
 function nukeAll(ns) {
 	var toolsNum = 0

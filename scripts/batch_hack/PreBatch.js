@@ -1,7 +1,7 @@
 /** @param {NS} ns **/
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+import * as ServerUtils from "/scripts/utils/ServerUtils.js"
 
-let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.ns"
+let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
 
 export async function main(ns) {
 	var option = ns.args[0]

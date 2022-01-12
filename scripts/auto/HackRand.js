@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
+import * as ServerUtils from "/scripts/utils/ServerUtils.js"
 
 export async function main(ns) {
 	while(true) {
