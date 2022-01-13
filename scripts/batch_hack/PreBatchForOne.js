@@ -46,7 +46,7 @@ async function growAndWeaken(ns, host, growThreads) {
 	var ramUsed = (weakenThreads * ns.getScriptRam(doWeakenPath)) + (growThreads * ns.getScriptRam(doGrowPath))
 	var scale = (currentServer.maxRam - currentServer.ramUsed) * 0.95 / ramUsed
 	scale = scale >= 1 ? 1 : scale
-	ns.run(doGrowPath, Math.ceil(growThreads * ), host, 0)
+	ns.run(doGrowPath, Math.ceil(growThreads * scale), host, 0)
 	await ns.sleep(weakenDelay)
 	ns.run(doWeakenPath, Math.ceil(weakenThreads * scale), host, 0)
 	await ns.sleep(weakenTime)
