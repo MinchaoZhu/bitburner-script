@@ -3,6 +3,7 @@ import * as BatchHack from "/scripts/batch_hack/Start.js"
 
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
+let defaultThreads = 64
 
 async function preBatchWeaken(ns, host) {
 	var currentSafeLevel = ns.getServerSecurityLevel(host)
