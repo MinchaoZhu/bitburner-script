@@ -1,8 +1,6 @@
 /** @param {NS} ns **/
 import * as BatchHack from "/scripts/batch_hack/Start.js"
 
-let defaultThreads = 40960
-let maxThreads = 204800
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
 
@@ -16,6 +14,9 @@ async function preBatchWeaken(ns, host) {
 
 		var fullThreads = fullDecr / oneThreadDecr
 		var actionThreads = Math.ceil(fullThreads)
+		var currentServer = ns.getServer()
+		
+		var maxThreads = 0.9 * (currentServer.maxRam - currentServer.ramUsed) / ns.getScriptRam(doWeakenPath)
 		if(fullThreads >= maxThreads) {
 			actionThreads = maxThreads
 		}
@@ -42,9 +43,12 @@ async function growAndWeaken(ns, host, growThreads) {
 	if(weakenTime < growTime) {
 		weakenDelay += growTime - weakenTime
 	}
-	ns.run(doGrowPath, Math.ceil(growThreads), host, 0)
+	var ramUsed = (weakenThreads * ns.getScriptRam(doWeakenPath)) + (growThreads * ns.getScriptRam(doGrowPath))
+	var scale = (currentServer.maxRam - currentServer.ramUsed) * 0.95 / ramUsed
+	scale = scale >= 1 ? 1 : scale
+	ns.run(doGrowPath, Math.ceil(growThreads * ), host, 0)
 	await ns.sleep(weakenDelay)
-	ns.run(doWeakenPath, Math.ceil(weakenThreads), host, 0)
+	ns.run(doWeakenPath, Math.ceil(weakenThreads * scale), host, 0)
 	await ns.sleep(weakenTime)
 }
 
@@ -63,7 +67,6 @@ async function preBatchGrow(ns, host) {
 			await growAndWeaken(ns, host, defaultThreads)
 		} else {
 			var growThreads = ns.growthAnalyze(host, Math.ceil(maxMoney / currentMoney))
-			growThreads = Math.min(growThreads, maxThreads)
 			growThreads = Math.max(1, growThreads)
 			await growAndWeaken(ns, host, growThreads)
 		}
