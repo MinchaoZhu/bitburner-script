@@ -31,8 +31,9 @@ async function preBatchWeaken(ns, host) {
 }
 
 async function growAndWeaken(ns, host, growThreads) {
+	var currentServer = ns.getServer()
 	var weakenDelay = 3000
-	var incrSafeLevel = ns.growthAnalyzeSecurity(defaultThreads)
+	var incrSafeLevel = ns.getServerSecurityLevel(host) - ns.getServerMinSecurityLevel(host) + ns.growthAnalyzeSecurity(growThreads)
 	var oneThreadDecr = ns.weakenAnalyze(1, ns.getServer().cpuCores)
 	var weakenThreads = (incrSafeLevel / oneThreadDecr) * 1.05
 
