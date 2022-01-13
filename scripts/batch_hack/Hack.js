@@ -132,7 +132,7 @@ export async function main(ns) {
 				batchHack(ns, host, delays, batchAnalysis)
 			}
 			await ns.sleep(batchDelay)
-			if(Date.now() - start >= oneRoundTimeScale * ns.getWeakenTime(host)) {
+			if(Date.now() - startTime  >= oneRoundTimeScale * ns.getWeakenTime(host)) {
 				BatchHack.prepared[host] = false
 			}
 		}
