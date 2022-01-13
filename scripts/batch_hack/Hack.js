@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
 import * as BatchHack from "/scripts/batch_hack/Start.js"
-import * as MathUtils from "/scripts/utils/MathUtils.js"
+import * as MathUtils from "/scripts/utils/MathUtils.ns"
 
 /**
  *  batch: HWGW 
@@ -11,14 +11,14 @@ import * as MathUtils from "/scripts/utils/MathUtils.js"
  *           GGGGGGGGGGGGGGGGGGGG
  * 
  */
-let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
-let doWeakenPath = "/scripts/exec/doWeaken.js"
-let doGrowPath = "/scripts/exec/doGrow.js"
-let doHackPath = "/scripts/exec/doHack.js"
-let defaultDelay = 20
-let hackRatio = 0.70
-let batchDelay = 100
-let oneRoundTimeScale = 4
+let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.ns"
+let doWeakenPath = "/scripts/exec/doWeaken.ns"
+let doGrowPath = "/scripts/exec/doGrow.ns"
+let doHackPath = "/scripts/exec/doHack.ns"
+let defaultDelay = 60
+let hackRatio = 0.85
+let batchDelay = 240
+let oneRoundTimeScale = 6
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
@@ -107,24 +107,49 @@ function logBatchMemNeeded(ns, batchAnalysis) {
 	ns.tprint("mem needed:      " + memNeeded + "GB")
 }
 
+async function killAllHackScripts(ns, host) {
+	var ps = ns.ps()
+	for(var i = 0; i < ps.length; i++) {
+		var p = ps[i]
+		if(p.filename === "doHack.js" && p.args[0] === host) {
+			ns.kill(p.pid)
+		} else if(p.filename === "doGrow.js" && p.args[0] === host) {
+			ns.kill(p.pid)
+		} else if(p.filename === "doWeaken.js" && p.args[0] === host) {
+			ns.kill(p.pid)
+		}
+		await ns.sleep(5)
+	}
+	await ns.sleep(233)
+}
+
 export async function main(ns) {
 	var host = ns.args[0]
+	var round = 1
+
+	var startTime = Date.now()
+	while(BatchHack.prepared[host] != true) {
+		ns.run(preBatchForOnePath, 1, host)
+		await ns.sleep(10000)
+	}
+
+	var delays = getDelays(ns, host)
+	var batchAnalysis = batchAnalyze(ns, host)
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+
+	logEndTime(ns, host)
+	logBatchAnalyze(ns, host)
+	logBatchMemNeeded(ns, batchAnalysis)
 
 	while(true) {
+		ns.tprint("Batch hack round: " + round + ", exec server: " + ns.getServer().hostname + ", target: " + host)
 		var startTime = Date.now()
 		while(BatchHack.prepared[host] != true) {
+			await killAllHackScripts(ns, host)
 			ns.run(preBatchForOnePath, 1, host)
 			await ns.sleep(10000)
+			round += 1
 		}
-
-		var delays = getDelays(ns, host)
-		var batchAnalysis = batchAnalyze(ns, host)
-		var memNeeded = batchMemNeeded(ns, batchAnalysis)
-
-		logEndTime(ns, host)
-		logBatchAnalyze(ns, host)
-		logBatchMemNeeded(ns, batchAnalysis)
-
 		while(BatchHack.prepared[host] === true) {
 			var server = ns.getServer()
 			var remainingMem = server.maxRam - server.ramUsed
@@ -132,7 +157,7 @@ export async function main(ns) {
 				batchHack(ns, host, delays, batchAnalysis)
 			}
 			await ns.sleep(batchDelay)
-			if(Date.now() - start >= oneRoundTimeScale * ns.getWeakenTime(host)) {
+			if(Date.now() - startTime >= oneRoundTimeScale * ns.getWeakenTime(host)) {
 				BatchHack.prepared[host] = false
 			}
 		}
