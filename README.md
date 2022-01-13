@@ -20,7 +20,7 @@ bitburner-script
 1. Download initial script
 
 ```bash
-wget "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.ns" wget.ns
+wget "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.js" wget.js
 ```
 
 2. Download all scripts
@@ -32,29 +32,29 @@ run wget.ns"
 3. alias
 
 ```bash
-alias nuke="run /scripts/auto/Nuke.ns";
+alias nuke="run /scripts/auto/Nuke.js";
 
-alias hackRand="run /scripts/auto/HackRand.ns";
+alias hackRand="run /scripts/auto/HackRand.js";
 
-alias boom="run /scripts/remote/HackRand.ns";
+alias boom="run /scripts/remote/HackRand.js";
 
-alias autoBuy="run /scripts/auto/BuyServers.ns";
+alias autoBuy="run /scripts/auto/BuyServers.js";
 
-alias stock="run /scripts/auto/tradeStocks.ns";
+alias stock="run /scripts/auto/tradeStocks.js";
 
-alias stopStock="run /scripts/auto/stopTrade.ns";
+alias stopStock="run /scripts/auto/stopTrade.js";
 
-alias soldStock="run /scripts/auto/stopTradeAndSold.ns";
+alias soldStock="run /scripts/auto/stopTradeAndSold.js";
 
-alias money="run /scripts/exec/allMoney.ns";
+alias money="run /scripts/exec/allMoney.js";
 
-alias hackOne="run /scripts/auto/Hack.ns";
+alias hackOne="run /scripts/auto/Hack.js";
 
-alias preBatch="run /scripts/remote/PreBatch.ns";
+alias preBatch="run /scripts/remote/PreBatch.js";
 
-alias copyScripts="run /scripts/remote/CopyScripts.ns";
+alias copyScripts="run /scripts/remote/CopyScripts.js";
 
-alias info="run /scripts/exec/Info.ns";
+alias info="run /scripts/exec/Info.js";
 
 alias BatchHack="run /scripts/batch_hack/Start.js";
 ```
