@@ -107,19 +107,6 @@ function logBatchMemNeeded(ns, batchAnalysis) {
 	ns.tprint("mem needed:      " + memNeeded + "GB")
 }
 
-async function killAllHackScripts(ns, host) {
-	ns.tprint("start: kill all scripts for: " + host)
-	var ps = ns.ps().filter(p => 
-		(p.filename === "doHack.js" || p.filename === "doGrow.js" || p.filename === "doHack.js")
-		&& p.args[0] === host)
-	for(var i = 0; i < ps.length; i++) {
-			ns.kill(ps[i].pid)
-			await ns.sleep(1)
-	}	
-	ns.tprint("end: kill all scripts for: " + host)
-	await ns.sleep(233)
-}
-
 export async function main(ns) {
 	var host = ns.args[0]
 	var round = 0
@@ -141,7 +128,6 @@ export async function main(ns) {
 	while(true) {
 		var startTime = Date.now()
 		while(BatchHack.prepared[host] != true) {
-			await killAllHackScripts(ns, host)
 			ns.run(preBatchForOnePath, 1, host)
 			await ns.sleep(10000)
 		}

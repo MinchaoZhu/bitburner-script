@@ -85,8 +85,22 @@ async function preBatchForHost(ns, host) {
 	ns.tprint("Prebatch job for host [" + host + "] ends")
 }
 
+async function killAllHackScripts(ns, host) {
+	ns.tprint("start: kill all scripts for: " + host)
+	var ps = ns.ps().filter(p => 
+		(p.filename === "doHack.js" || p.filename === "doGrow.js" || p.filename === "doHack.js")
+		&& p.args[0] === host)
+	for(var i = 0; i < ps.length; i++) {
+			ns.kill(ps[i].pid)
+			await ns.sleep(1)
+	}	
+	ns.tprint("end: kill all scripts for: " + host)
+	await ns.sleep(233)
+}
+
 export async function main(ns) {
 	var host = ns.args[0]
+	await killAllHackScripts(ns, host)
 	await preBatchForHost(ns, host)
 	BatchHack.prepared[host] = true
 }
