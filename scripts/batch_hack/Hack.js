@@ -18,11 +18,7 @@ let doHackPath = "/scripts/exec/doHack.ns"
 let defaultDelay = 60
 let hackRatio = 0.85
 let batchDelay = 240
-<<<<<<< HEAD
 let oneRoundTimeScale = 6
-=======
-let oneRoundTimeScale = 10
->>>>>>> 4de648ee81a3e5e39c2dda5486c74c563656fd46
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
@@ -129,7 +125,7 @@ async function killAllHackScripts(ns, host) {
 
 export async function main(ns) {
 	var host = ns.args[0]
-	var round = 1
+	var round = 0
 
 	var startTime = Date.now()
 	while(BatchHack.prepared[host] != true) {
@@ -146,14 +142,14 @@ export async function main(ns) {
 	logBatchMemNeeded(ns, batchAnalysis)
 
 	while(true) {
-		ns.tprint("Batch hack round: " + round + ", exec server: " + ns.getServer().hostname + ", target: " + host)
 		var startTime = Date.now()
 		while(BatchHack.prepared[host] != true) {
 			await killAllHackScripts(ns, host)
 			ns.run(preBatchForOnePath, 1, host)
 			await ns.sleep(10000)
-			round += 1
 		}
+		round += 1		
+		ns.tprint("Batch hack round: " + round + ", exec server: " + ns.getServer().hostname + ", target: " + host)
 		while(BatchHack.prepared[host] === true) {
 			var server = ns.getServer()
 			var remainingMem = server.maxRam - server.ramUsed
