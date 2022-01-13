@@ -40,5 +40,6 @@ export async function main(ns) {
 		var urlPrefix = "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main"
 		var url = urlPrefix + scripts[i]
 		await ns.wget(url, scripts[i], "home")
+		ns.tprint("Downloaded: " + scripts[i)
 	}
 }
