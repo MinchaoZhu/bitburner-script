@@ -18,7 +18,11 @@ let doHackPath = "/scripts/exec/doHack.ns"
 let defaultDelay = 60
 let hackRatio = 0.85
 let batchDelay = 240
+<<<<<<< HEAD
 let oneRoundTimeScale = 6
+=======
+let oneRoundTimeScale = 10
+>>>>>>> 4de648ee81a3e5e39c2dda5486c74c563656fd46
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
