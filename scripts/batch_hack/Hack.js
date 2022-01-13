@@ -108,18 +108,15 @@ function logBatchMemNeeded(ns, batchAnalysis) {
 }
 
 async function killAllHackScripts(ns, host) {
-	var ps = ns.ps()
+	ns.tprint("start: kill all scripts for: " + host)
+	var ps = ns.ps().filter(p => 
+		(p.filename === "doHack.js" || p.filename === "doGrow.js" || p.filename === "doHack.js")
+		&& p.args[0] === host)
 	for(var i = 0; i < ps.length; i++) {
-		var p = ps[i]
-		if(p.filename === "doHack.js" && p.args[0] === host) {
-			ns.kill(p.pid)
-		} else if(p.filename === "doGrow.js" && p.args[0] === host) {
-			ns.kill(p.pid)
-		} else if(p.filename === "doWeaken.js" && p.args[0] === host) {
-			ns.kill(p.pid)
-		}
-		await ns.sleep(5)
-	}
+			ns.kill(ps[i].pid)
+			await ns.sleep(1)
+	}	
+	ns.tprint("end: kill all scripts for: " + host)
 	await ns.sleep(233)
 }
 
