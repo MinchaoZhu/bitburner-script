@@ -26,7 +26,7 @@ wget "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts
 2. Download all scripts
 
 ```bash
-run wget.ns
+run wget.js
 ```
 
 3. alias
