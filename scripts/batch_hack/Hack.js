@@ -11,10 +11,10 @@ import * as MathUtils from "/scripts/utils/MathUtils.js"
  *           GGGGGGGGGGGGGGGGGGGG
  * 
  */
-let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.ns"
-let doWeakenPath = "/scripts/exec/doWeaken.ns"
-let doGrowPath = "/scripts/exec/doGrow.ns"
-let doHackPath = "/scripts/exec/doHack.ns"
+let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
+let doWeakenPath = "/scripts/exec/doWeaken.js"
+let doGrowPath = "/scripts/exec/doGrow.js"
+let doHackPath = "/scripts/exec/doHack.js"
 let defaultDelay = 60
 let hackRatio = 0.85
 let batchDelay = 240
