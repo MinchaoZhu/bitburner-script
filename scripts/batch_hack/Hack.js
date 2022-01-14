@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
 import * as BatchHack from "/scripts/batch_hack/Start.js"
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
 
 /**
  *  batch: HWGW 
