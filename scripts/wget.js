@@ -13,6 +13,7 @@ export async function main(ns) {
 					"/scripts/batch_hack/PreBatch.js",
 					"/scripts/batch_hack/PreBatchForOne.js",
 					"/scripts/batch_hack/Start.js",
+					"/scripts/batch_hack/go.js",
 					"/scripts/exec/allMoney.js",
 					"/scripts/exec/CopyScripts.js",
 					"/scripts/exec/doGrow.js",
