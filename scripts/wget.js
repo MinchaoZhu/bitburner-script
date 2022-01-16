@@ -29,6 +29,7 @@ export async function main(ns) {
 					"/scripts/exec/Info.js",
 					"/scripts/exec/RunScriptOnOwned.js",
 					"/scripts/exec/StockGrow.js",
+					"/scripts/exec/SearchPath.js",
 					"/scripts/exec/Weaken.js",
 					"/scripts/remote/HackRand.js",
 					"/scripts/remote/CopyScripts.js",
