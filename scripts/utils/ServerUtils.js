@@ -96,7 +96,7 @@ function pathSearch(ns, begin, end, path, travalled) {
 
 export function getPath(ns, begin, end) {
     var path = new Array
-    var all = ServerUtils.getAllServers(ns)
+    var all = getAllServers(ns)
     if(!all.includes(begin) || !all.includes(end)) {
         return []
     }
