@@ -72,3 +72,35 @@ export function getComputingServers(ns, option) {
 		return getOwnedServers(ns)
 	}
 }
+
+function pathSearch(ns, begin, end, path, travalled) {    
+    if(begin === end) {
+        travalled.push(begin) 
+        path.push(begin)  
+        return
+    } else if(travalled.includes(begin)) {
+        return
+    } else {       
+        travalled.push(begin) 
+        path.push(begin)  
+        var hosts = ns.scan(begin)
+        for (var i = 0; i < hosts.length; i++) { 
+            pathSearch(ns, hosts[i], end, path, travalled)
+            if(path[path.length - 1] === end) {
+                return
+            }
+        }
+        path.pop()
+    }
+}
+
+export function getPath(ns, begin, end) {
+    var path = new Array
+    var all = ServerUtils.getAllServers(ns)
+    if(!all.includes(begin) || !all.includes(end)) {
+        return []
+    }
+    var travalled = new Array   
+    pathSearch(ns, begin, end, path, travalled)
+    return path
+}
