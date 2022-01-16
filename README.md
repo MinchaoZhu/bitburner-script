@@ -59,6 +59,8 @@ alias info="run /scripts/exec/Info.js";
 alias BatchHack="run /scripts/batch_hack/Start.js";
 
 alias hack="run /scripts/batch_hack/Hack.js";
+
+alias path="run /scripts/exec/SearchPath.js";
 ```
 ### Commands
 1. ```nuke```
@@ -127,3 +129,10 @@ Start or stop batch hack on purchased server or home or all servers.
 13. ```hack <host>```
 
 Hack host on current server using batch-hack methods.
+
+14. ```path <start?> <end>```
+
+
+Search net path from start to end.
+
+Start will be "home" if there is no arg `start`.
