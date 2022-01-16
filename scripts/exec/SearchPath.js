@@ -12,7 +12,7 @@ export async function main(ns) {
   }
   var output = ""
   
-  for(int i = 0; i < path.length; i++) {
+  for(var i = 0; i < path.length; i++) {
     output += path[i] + "->" 
   }
   output = output.substring(0, output.length - 2)
