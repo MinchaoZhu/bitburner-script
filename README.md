@@ -57,6 +57,8 @@ alias copyScripts="run /scripts/remote/CopyScripts.js";
 alias info="run /scripts/exec/Info.js";
 
 alias BatchHack="run /scripts/batch_hack/Start.js";
+
+alias hack="run /scripts/batch_hack/Hack.js";
 ```
 ### Commands
 1. ```nuke```
@@ -122,3 +124,6 @@ Start or stop batch hack on purchased server or home or all servers.
 
 ```all```: on both home and purchased servers
 
+13. ```hack <host>```
+
+Hack host on current server using batch-hack methods.
