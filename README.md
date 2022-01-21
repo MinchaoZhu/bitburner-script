@@ -16,8 +16,12 @@ bitburner-script
     
 ## Usage
  In **game**'s terminal
+ 
+ 在游戏里面的 terminal 中
 ### Init
 1. Download initial script
+
+下载初始脚本
 
 ```bash
 wget "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts/wget.js" wget.js
@@ -25,11 +29,15 @@ wget "https://raw.githubusercontent.com/MinchaoZhu/bitburner-script/main/scripts
 
 2. Download all scripts
 
+下载所有脚本
+
 ```bash
 run wget.js
 ```
 
 3. alias
+
+设置快捷命令
 
 ```bash
 alias nuke="run /scripts/auto/Nuke.js";
@@ -65,15 +73,19 @@ alias path="run /scripts/exec/SearchPath.js";
 ### Commands
 1. ```nuke```
 
+根据 hack 等级和拥有的 xxx.exe 自动 nuke 服务器.
+
 Auto-nuke all servers continuously according your hacking level and owned xxx.exe
 
 2. ```hackRand```
 
 The server running it will randomly hacking all nuked servers continuously.
 
-Attention: will c.ns"ume **all** memory
+Attention: will consume **all** memory
 
 3. ```autoBuy <targetRam>```
+
+自动购买服务器, 参数为目标内存.
 
 Continuously auto-buy and upgrade purchased servers util all purchased servers' ram reachs targetRam. The server name in format 
 ```
@@ -106,6 +118,8 @@ Print your cash and stock value.
 
 9. ```info <host>```
 
+展示目标主机的信息
+
 Print host info
 
 10. ```preBatch```
@@ -113,6 +127,8 @@ Print host info
 Weaken and grow all hackable servers util they are in min sercurity level and max money. The working scripts are running on purchased server.
 
 11. ```copyScripts```
+
+复制所有脚本到购买的服务器上
 
 Copy scripts folder to all purchased servers.
 
@@ -128,10 +144,13 @@ Start or stop batch hack on purchased server or home or all servers.
 
 13. ```hack <host>```
 
+在本地主机上用 batch hack 入侵特定的服务器
+
 Hack host on current server using batch-hack methods.
 
 14. ```path <start?> <end>```
 
+查找从起点服务器到终点服务器的路线. 如果只有一个参数, 则为 "home" 到终点服务器的路线
 
 Search net path from start to end.
 
