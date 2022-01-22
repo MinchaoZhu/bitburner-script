@@ -5,7 +5,7 @@ export async function main(ns) {
   var start = ns.args[0]
   var end = ns.args[1]
   var path
-  if(end === null) {
+  if(end === undefined) {
     path = ServerUtils.getPath(ns, "home", start)
   } else {
     path = ServerUtils.getPath(ns, start, end)
