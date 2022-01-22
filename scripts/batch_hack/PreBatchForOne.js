@@ -1,5 +1,5 @@
 /** @param {NS} ns **/
-import * as BatchHack from "/scripts/batch_hack/Start.js"
+import * as BatchHack from "/scripts/batch_hack/Hack.js"
 
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
@@ -102,5 +102,5 @@ export async function main(ns) {
 	var host = ns.args[0]
 	await killAllHackScripts(ns, host)
 	await preBatchForHost(ns, host)
-	BatchHack.prepared[host] = true
+	await BatchHack.setPrepared(ns, host, true)
 }
