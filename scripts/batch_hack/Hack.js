@@ -17,17 +17,19 @@ let doGrowPath = "/scripts/exec/doGrow.js"
 let doHackPath = "/scripts/exec/doHack.js"
 let defaultDelay = 30
 let hackRatio = 0.85
-let batchDelay = 100
+let batchDelay = 120
 let oneRoundTimeScale = 10
 
-function getDelays(ns, host) {
+function getDelays(ns, host, actualBatchDelay) {
 	var weakenTime = ns.getWeakenTime(host)
 	var growTime = ns.getGrowTime(host)
 	var hackTime = ns.getHackTime(host)
-	
-	var delay1 = 2.0 * defaultDelay
-	var delay2 = weakenTime - defaultDelay - hackTime
-	var delay3 = weakenTime + defaultDelay - growTime
+	var actualInnerDelay = actualBatchDelay / 4
+	actualInnerDelay = Math.max(actualInnerDelay, defaultDelay)
+
+	var delay1 = 2.0 * actualInnerDelay
+	var delay2 = weakenTime - actualInnerDelay - hackTime
+	var delay3 = weakenTime + actualInnerDelay - growTime
 	return {
 		delayW: delay1,
 		delayH: delay2,
@@ -86,18 +88,6 @@ async function batchHack(ns, host, delays, batchAnalysis) {
 	ns.run(doHackPath,   batchAnalysis.threadsH,  host, delays.delayH, MathUtils.getRandInt(ns))
 }
 
-function logEndTime(ns, host) {
-	var delays = getDelays(ns, host)
-	var weakenTime = ns.getWeakenTime(host)
-	var growTime = ns.getGrowTime(host)
-	var hackTime = ns.getHackTime(host)
-	ns.tprint("host: " + host)
-	ns.tprint("delays: " + JSON.stringify(delays))
-	ns.tprint("end time for H:  " + ((delays.delayH + hackTime)/1000).toFixed(3) + "s")
-	ns.tprint("end time for W1: " + ((weakenTime)/1000).toFixed(3) + "s")
-	ns.tprint("end time for G:  " + ((delays.delayG + growTime)/1000).toFixed(3) + "s")
-	ns.tprint("end time for W2: " + ((delays.delayW + weakenTime)/1000).toFixed(3) + "s")
-}
 
 export async function setPrepared(ns, host, value) {
 	var fileName = preparedDataPath + host + ".txt"
@@ -138,9 +128,23 @@ function logBatchAnalyze(ns, host) {
 	var batchAnalysis = batchAnalyze(ns, host)
 	ns.tprint("batchAnalysis:   " + JSON.stringify(batchAnalysis))
 }
+
 function logBatchMemNeeded(ns, batchAnalysis) {
 	var memNeeded = batchMemNeeded(ns, batchAnalysis)
 	ns.tprint("mem needed:      " + memNeeded + "GB")
+}
+
+function logEndTime(ns, host, actualBatchDelay) {
+	var delays = getDelays(ns, host, actualBatchDelay)
+	var weakenTime = ns.getWeakenTime(host)
+	var growTime = ns.getGrowTime(host)
+	var hackTime = ns.getHackTime(host)
+	ns.tprint("host: " + host)
+	ns.tprint("delays: " + JSON.stringify(delays))
+	ns.tprint("end time for H:  " + ((delays.delayH + hackTime)/1000).toFixed(3) + "s")
+	ns.tprint("end time for W1: " + ((weakenTime)/1000).toFixed(3) + "s")
+	ns.tprint("end time for G:  " + ((delays.delayG + growTime)/1000).toFixed(3) + "s")
+	ns.tprint("end time for W2: " + ((delays.delayW + weakenTime)/1000).toFixed(3) + "s")
 }
 
 export async function main(ns) {
@@ -153,12 +157,13 @@ export async function main(ns) {
 		await ns.sleep(1000)
 	}
 
-	var delays = getDelays(ns, host)
 	var batchAnalysis = batchAnalyze(ns, host)
-	var memNeeded = batchMemNeeded(ns, batchAnalysis)
 	var actualBatchDelay = getBatchDelay(ns, host, batchAnalysis)
+	var delays = getDelays(ns, host, actualBatchDelay)
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
 
-	logEndTime(ns, host)
+	ns.tprint("actual batch delay: " + actualBatchDelay)
+	logEndTime(ns, host, actualBatchDelay)
 	logBatchAnalyze(ns, host)
 	logBatchMemNeeded(ns, batchAnalysis)
 
