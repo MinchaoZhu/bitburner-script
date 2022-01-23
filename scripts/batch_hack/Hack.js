@@ -82,10 +82,10 @@ function batchAnalyze(ns, host) {
 }
 
 async function batchHack(ns, host, delays, batchAnalysis) {
-	ns.run(doWeakenPath, batchAnalysis.threadsW1, host, 0, MathUtils.getRandInt(ns))
-	ns.run(doWeakenPath, batchAnalysis.threadsW2, host, delays.delayW, MathUtils.getRandInt(ns))
-	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
 	ns.run(doHackPath,   batchAnalysis.threadsH,  host, delays.delayH, MathUtils.getRandInt(ns))
+	ns.run(doWeakenPath, batchAnalysis.threadsW1, host, 0, MathUtils.getRandInt(ns))
+	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
+	ns.run(doWeakenPath, batchAnalysis.threadsW2, host, delays.delayW, MathUtils.getRandInt(ns))
 }
 
 
