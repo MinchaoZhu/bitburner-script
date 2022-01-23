@@ -15,10 +15,10 @@ let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
 let doHackPath = "/scripts/exec/doHack.js"
-let defaultDelay = 100
+let defaultDelay = 30
 let hackRatio = 0.85
-let batchDelay = 90
-let oneRoundTimeScale = 6
+let batchDelay = 100
+let oneRoundTimeScale = 10
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
@@ -110,7 +110,28 @@ export async function setPrepared(ns, host, value) {
 
 export async function isPrepared(ns, host) {
 	var fileName = preparedDataPath + host + ".txt"
-	return await ns.fileExists(fileName)
+	var flag =  await ns.fileExists(fileName)
+	return flag
+}
+
+function isOptimized(ns, host) {
+	var currentSafeLevel = ns.getServerSecurityLevel(host)
+	var minSafeLevel = ns.getServerMinSecurityLevel(host)
+	var currentMoney = ns.getServerMoneyAvailable(host)
+	var maxMoney = ns.getServerMaxMoney(host)
+	return currentSafeLevel <= minSafeLevel && currentMoney >= maxMoney
+}
+
+function getBatchDelay(ns, host, batchAnalysis) {
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+	var maxMem = ns.getServer().maxRam
+	var weakenTime = ns.getWeakenTime(host)
+	var batchNumConcurrent = maxMem / memNeeded
+	batchNumConcurrent = Math.max(3, batchNumConcurrent)
+
+	var thisBatchDelay = weakenTime / batchNumConcurrent
+	thisBatchDelay = Math.max(batchDelay, thisBatchDelay)
+	return thisBatchDelay
 }
 
 function logBatchAnalyze(ns, host) {
@@ -135,6 +156,7 @@ export async function main(ns) {
 	var delays = getDelays(ns, host)
 	var batchAnalysis = batchAnalyze(ns, host)
 	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+	var actualBatchDelay = getBatchDelay(ns, host, batchAnalysis)
 
 	logEndTime(ns, host)
 	logBatchAnalyze(ns, host)
@@ -151,10 +173,10 @@ export async function main(ns) {
 		while(await isPrepared(ns, host)) {
 			var server = ns.getServer()
 			var remainingMem = server.maxRam - server.ramUsed
-			if(remainingMem >= memNeeded) {
+			if(remainingMem >= memNeeded && isOptimized(ns, host)) {
 				batchHack(ns, host, delays, batchAnalysis)
 			}
-			await ns.sleep(batchDelay)
+			await ns.sleep(actualBatchDelay)
 			if(Date.now() - startTime >= oneRoundTimeScale * ns.getWeakenTime(host)) {
 				await setPrepared(ns, host, false)
 			}
