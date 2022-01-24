@@ -15,21 +15,19 @@ let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
 let doHackPath = "/scripts/exec/doHack.js"
-let defaultDelay = 30
+let defaultDelay = 40
 let hackRatio = 0.85
 let batchDelay = 120
 let oneRoundTimeScale = 10
 
-function getDelays(ns, host, actualBatchDelay) {
+function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
 	var growTime = ns.getGrowTime(host)
 	var hackTime = ns.getHackTime(host)
-	var actualInnerDelay = actualBatchDelay / 4
-	actualInnerDelay = Math.max(actualInnerDelay, defaultDelay)
 
-	var delay1 = 2.0 * actualInnerDelay
-	var delay2 = weakenTime - actualInnerDelay - hackTime
-	var delay3 = weakenTime + actualInnerDelay - growTime
+	var delay1 = 2.0 * defaultDelay
+	var delay2 = weakenTime - defaultDelay - hackTime
+	var delay3 = weakenTime + defaultDelay - growTime
 	return {
 		delayW: delay1,
 		delayH: delay2,
@@ -82,10 +80,10 @@ function batchAnalyze(ns, host) {
 }
 
 async function batchHack(ns, host, delays, batchAnalysis) {
-	ns.run(doHackPath,   batchAnalysis.threadsH,  host, delays.delayH, MathUtils.getRandInt(ns))
 	ns.run(doWeakenPath, batchAnalysis.threadsW1, host, 0, MathUtils.getRandInt(ns))
-	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
 	ns.run(doWeakenPath, batchAnalysis.threadsW2, host, delays.delayW, MathUtils.getRandInt(ns))
+	ns.run(doHackPath,   batchAnalysis.threadsH,  host, delays.delayH, MathUtils.getRandInt(ns))
+	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
 }
 
 
@@ -134,8 +132,8 @@ function logBatchMemNeeded(ns, batchAnalysis) {
 	ns.tprint("mem needed:      " + memNeeded + "GB")
 }
 
-function logEndTime(ns, host, actualBatchDelay) {
-	var delays = getDelays(ns, host, actualBatchDelay)
+function logEndTime(ns, host) {
+	var delays = getDelays(ns, host)
 	var weakenTime = ns.getWeakenTime(host)
 	var growTime = ns.getGrowTime(host)
 	var hackTime = ns.getHackTime(host)
@@ -159,7 +157,7 @@ export async function main(ns) {
 
 	var batchAnalysis = batchAnalyze(ns, host)
 	var actualBatchDelay = getBatchDelay(ns, host, batchAnalysis)
-	var delays = getDelays(ns, host, actualBatchDelay)
+	var delays = getDelays(ns, host)
 	var memNeeded = batchMemNeeded(ns, batchAnalysis)
 
 	ns.tprint("actual batch delay: " + actualBatchDelay)
