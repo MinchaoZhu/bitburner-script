@@ -1,6 +1,6 @@
 /** @param {NS} ns **/
-import * as MathUtils from "/scripts/utils/MathUtils.ns"
-import * as ServerUtils from "/scripts/utils/ServerUtils.ns"
+import * as MathUtils from "/scripts/utils/MathUtils.js"
+import * as ServerUtils from "/scripts/utils/ServerUtils.js"
 
 let batchHackPath = "/scripts/batch_hack/Hack.js"
 

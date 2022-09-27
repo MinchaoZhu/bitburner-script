@@ -11,20 +11,21 @@ import * as MathUtils from "/scripts/utils/MathUtils.js"
  *           GGGGGGGGGGGGGGGGGGGG
  * 
  */
+
 let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
 let doHackPath = "/scripts/exec/doHack.js"
 let defaultDelay = 60
 let hackRatio = 0.85
-let batchDelay = 240
-let oneRoundTimeScale = 6
+let batchDelay = 120
+let oneRoundTimeScale = 10
 
 function getDelays(ns, host) {
 	var weakenTime = ns.getWeakenTime(host)
 	var growTime = ns.getGrowTime(host)
 	var hackTime = ns.getHackTime(host)
-	
+
 	var delay1 = 2.0 * defaultDelay
 	var delay2 = weakenTime - defaultDelay - hackTime
 	var delay3 = weakenTime + defaultDelay - growTime
@@ -70,9 +71,10 @@ function batchAnalyze(ns, host) {
 	}
 	var scaleFactor = batchScaleFactor(ns, batchAnalysis)
 	Object.keys(batchAnalysis).forEach(
-	key => {
-	    batchAnalysis[key] *= scaleFactor
-        }
+		key => {
+			batchAnalysis[key] *= scaleFactor
+			batchAnalysis[key] = Math.max(batchAnalysis[key], 1)
+		}
 	)
 	
 	return batchAnalysis
@@ -81,8 +83,54 @@ function batchAnalyze(ns, host) {
 async function batchHack(ns, host, delays, batchAnalysis) {
 	ns.run(doWeakenPath, batchAnalysis.threadsW1, host, 0, MathUtils.getRandInt(ns))
 	ns.run(doWeakenPath, batchAnalysis.threadsW2, host, delays.delayW, MathUtils.getRandInt(ns))
-	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
 	ns.run(doHackPath,   batchAnalysis.threadsH,  host, delays.delayH, MathUtils.getRandInt(ns))
+	ns.run(doGrowPath,   batchAnalysis.threadsG,  host, delays.delayG, MathUtils.getRandInt(ns))
+}
+
+
+export async function setPrepared(ns, host, value) {
+	var fileName = preparedDataPath + host + ".txt"
+	if(value) {
+		await ns.write(fileName, "prepared")
+	} else {
+		await ns.rm(fileName)
+	}
+}
+
+export async function isPrepared(ns, host) {
+	var fileName = preparedDataPath + host + ".txt"
+	var flag =  await ns.fileExists(fileName)
+	return flag
+}
+
+function isOptimized(ns, host) {
+	var currentSafeLevel = ns.getServerSecurityLevel(host)
+	var minSafeLevel = ns.getServerMinSecurityLevel(host)
+	var currentMoney = ns.getServerMoneyAvailable(host)
+	var maxMoney = ns.getServerMaxMoney(host)
+	return currentSafeLevel <= minSafeLevel && currentMoney >= maxMoney
+}
+
+function getBatchDelay(ns, host, batchAnalysis) {
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+	var maxMem = ns.getServer().maxRam
+	var weakenTime = ns.getWeakenTime(host)
+	var batchNumConcurrent = maxMem / memNeeded
+	batchNumConcurrent = Math.max(3, batchNumConcurrent)
+
+	var thisBatchDelay = weakenTime / batchNumConcurrent
+	thisBatchDelay = Math.max(batchDelay, thisBatchDelay)
+	return thisBatchDelay
+}
+
+function logBatchAnalyze(ns, host) {
+	var batchAnalysis = batchAnalyze(ns, host)
+	ns.tprint("batchAnalysis:   " + JSON.stringify(batchAnalysis))
+}
+
+function logBatchMemNeeded(ns, batchAnalysis) {
+	var memNeeded = batchMemNeeded(ns, batchAnalysis)
+	ns.tprint("mem needed:      " + memNeeded + "GB")
 }
 
 function logEndTime(ns, host) {
@@ -98,50 +146,43 @@ function logEndTime(ns, host) {
 	ns.tprint("end time for W2: " + ((delays.delayW + weakenTime)/1000).toFixed(3) + "s")
 }
 
-function logBatchAnalyze(ns, host) {
-	var batchAnalysis = batchAnalyze(ns, host)
-	ns.tprint("batchAnalysis:   " + JSON.stringify(batchAnalysis))
-}
-function logBatchMemNeeded(ns, batchAnalysis) {
-	var memNeeded = batchMemNeeded(ns, batchAnalysis)
-	ns.tprint("mem needed:      " + memNeeded + "GB")
-}
-
 export async function main(ns) {
 	var host = ns.args[0]
 	var round = 0
 
-	var startTime = Date.now()
-	while(BatchHack.prepared[host] != true) {
+	setPrepared(ns, host, false)
+	while(await isPrepared(ns, host) != true) {
 		ns.run(preBatchForOnePath, 1, host)
-		await ns.sleep(10000)
+		await ns.sleep(1000)
 	}
 
-	var delays = getDelays(ns, host)
 	var batchAnalysis = batchAnalyze(ns, host)
+	var actualBatchDelay = getBatchDelay(ns, host, batchAnalysis)
+	var delays = getDelays(ns, host)
 	var memNeeded = batchMemNeeded(ns, batchAnalysis)
 
-	logEndTime(ns, host)
+	ns.tprint("actual batch delay: " + actualBatchDelay)
+	logEndTime(ns, host, actualBatchDelay)
 	logBatchAnalyze(ns, host)
 	logBatchMemNeeded(ns, batchAnalysis)
 
 	while(true) {
 		var startTime = Date.now()
-		while(BatchHack.prepared[host] != true) {
+		while(await isPrepared(ns, host) != true) {
 			ns.run(preBatchForOnePath, 1, host)
-			await ns.sleep(10000)
+			await ns.sleep(5000)
 		}
 		round += 1		
 		ns.tprint("Batch hack round: " + round + ", exec server: " + ns.getServer().hostname + ", target: " + host)
-		while(BatchHack.prepared[host] === true) {
+		while(await isPrepared(ns, host)) {
 			var server = ns.getServer()
 			var remainingMem = server.maxRam - server.ramUsed
-			if(remainingMem >= 1.05 * memNeeded) {
+			if(remainingMem >= memNeeded && isOptimized(ns, host)) {
 				batchHack(ns, host, delays, batchAnalysis)
 			}
-			await ns.sleep(batchDelay)
+			await ns.sleep(actualBatchDelay)
 			if(Date.now() - startTime >= oneRoundTimeScale * ns.getWeakenTime(host)) {
-				BatchHack.prepared[host] = false
+				await setPrepared(ns, host, false)
 			}
 		}
 	}

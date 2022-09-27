@@ -1,7 +1,4 @@
 /** @param {NS} ns **/
-let prepared = {}
-
-export {prepared}/** @param {NS} ns **/
 import * as ServerUtils from "/scripts/utils/ServerUtils.js"
 import * as MathUtils from "/scripts/utils/MathUtils.js"
 
