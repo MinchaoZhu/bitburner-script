@@ -1,4 +1,5 @@
 /** @param {NS} ns **/
+import * as BatchHack from "/scripts/batch_hack/Start.js"
 import * as MathUtils from "/scripts/utils/MathUtils.js"
 
 /**
@@ -10,12 +11,12 @@ import * as MathUtils from "/scripts/utils/MathUtils.js"
  *           GGGGGGGGGGGGGGGGGGGG
  * 
  */
-let preparedDataPath = "/scripts/data/prepared/"
+
 let preBatchForOnePath = "/scripts/batch_hack/PreBatchForOne.js"
 let doWeakenPath = "/scripts/exec/doWeaken.js"
 let doGrowPath = "/scripts/exec/doGrow.js"
 let doHackPath = "/scripts/exec/doHack.js"
-let defaultDelay = 40
+let defaultDelay = 60
 let hackRatio = 0.85
 let batchDelay = 120
 let oneRoundTimeScale = 10
